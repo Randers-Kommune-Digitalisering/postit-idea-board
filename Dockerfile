@@ -12,7 +12,7 @@ RUN cd vue && npm install && npm run build
 RUN cp -r vue/dist dist
 
 # Install Express dependencies
-RUN cd express && npm install && npm ci --only=production
+RUN cd express && npm install --omit=dev
 
 # Stage 2: Build the final image with Python and Node.js
 FROM python:3.10-alpine
