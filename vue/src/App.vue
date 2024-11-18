@@ -8,31 +8,7 @@
   const isConnected = ref(false)
   const isConnecting = ref(true)
 
-  const notes = ref([
-    { id: 1, data: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis vel dignissim orci. In hac habitasse platea dictumst. Ut non erat ut felis facilisis suscipit. Aenean euismod tincidunt viverra.' },
-    { id: 2, data: 'Etiam quis ex quis eros ullamcorper elementum vitae sed nisl. ' },
-    { id: 3, data: 'Quisque imperdiet bibendum quam, quis cursus erat viverra porta. Vivamus convallis purus vel tortor ullamcorper dignissim. Cras varius dolor vitae pellentesque aliquet. Ut maximus lobortis mi vel pulvinar. Curabitur pellentesque erat eget tortor suscipit vulputate. Mauris pellentesque nec metus in commodo. Suspendisse in turpis neque. Aenean iaculis sagittis tellus, eu tincidunt odio semper at. Nunc efficitur quam quam, eget aliquet enim lobortis ut.' },
-    { id: 4, data: 'Etiam quis ex quis eros ullamcorper elementum vitae sed nisl. ' },
-    { id: 1, data: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis vel dignissim orci. In hac habitasse platea dictumst. Ut non erat ut felis facilisis suscipit. Aenean euismod tincidunt viverra.' },
-    { id: 2, data: 'Etiam quis ex quis eros ullamcorper elementum vitae sed nisl. ' },
-    { id: 3, data: 'Quisque imperdiet bibendum quam, quis cursus erat viverra porta. Vivamus convallis purus vel tortor ullamcorper dignissim. Cras varius dolor vitae pellentesque aliquet. Ut maximus lobortis mi vel pulvinar. Curabitur pellentesque erat eget tortor suscipit vulputate. Mauris pellentesque nec metus in commodo. Suspendisse in turpis neque. Aenean iaculis sagittis tellus, eu tincidunt odio semper at. Nunc efficitur quam quam, eget aliquet enim lobortis ut.' },
-    { id: 4, data: 'Etiam quis ex quis eros ullamcorper elementum vitae sed nisl. ' },
-    { id: 4, data: 'Etiam quis ex quis eros ullamcorper elementum vitae sed nisl. ' },
-    { id: 1, data: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis vel dignissim orci. In hac habitasse platea dictumst. Ut non erat ut felis facilisis suscipit. Aenean euismod tincidunt viverra.' },
-    { id: 2, data: 'Etiam quis ex quis eros ullamcorper elementum vitae sed nisl. ' },
-    { id: 3, data: 'Quisque imperdiet bibendum quam, quis cursus erat viverra porta. Vivamus convallis purus vel tortor ullamcorper dignissim. Cras varius dolor vitae pellentesque aliquet. Ut maximus lobortis mi vel pulvinar. Curabitur pellentesque erat eget tortor suscipit vulputate. Mauris pellentesque nec metus in commodo. Suspendisse in turpis neque. Aenean iaculis sagittis tellus, eu tincidunt odio semper at. Nunc efficitur quam quam, eget aliquet enim lobortis ut.' },
-    { id: 4, data: 'Etiam quis ex quis eros ullamcorper elementum vitae sed nisl. ' },
-    { id: 4, data: 'Etiam quis ex quis eros ullamcorper elementum vitae sed nisl. ' },
-    { id: 1, data: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis vel dignissim orci. In hac habitasse platea dictumst. Ut non erat ut felis facilisis suscipit. Aenean euismod tincidunt viverra.' },
-    { id: 2, data: 'Etiam quis ex quis eros ullamcorper elementum vitae sed nisl. ' },
-    { id: 3, data: 'Quisque imperdiet bibendum quam, quis cursus erat viverra porta. Vivamus convallis purus vel tortor ullamcorper dignissim. Cras varius dolor vitae pellentesque aliquet. Ut maximus lobortis mi vel pulvinar. Curabitur pellentesque erat eget tortor suscipit vulputate. Mauris pellentesque nec metus in commodo. Suspendisse in turpis neque. Aenean iaculis sagittis tellus, eu tincidunt odio semper at. Nunc efficitur quam quam, eget aliquet enim lobortis ut.' },
-    { id: 4, data: 'Etiam quis ex quis eros ullamcorper elementum vitae sed nisl. ' },
-    { id: 4, data: 'Etiam quis ex quis eros ullamcorper elementum vitae sed nisl. ' },
-    { id: 1, data: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis vel dignissim orci. In hac habitasse platea dictumst. Ut non erat ut felis facilisis suscipit. Aenean euismod tincidunt viverra.' },
-    { id: 2, data: 'Etiam quis ex quis eros ullamcorper elementum vitae sed nisl. ' },
-    { id: 3, data: 'Quisque imperdiet bibendum quam, quis cursus erat viverra porta. Vivamus convallis purus vel tortor ullamcorper dignissim. Cras varius dolor vitae pellentesque aliquet. Ut maximus lobortis mi vel pulvinar. Curabitur pellentesque erat eget tortor suscipit vulputate. Mauris pellentesque nec metus in commodo. Suspendisse in turpis neque. Aenean iaculis sagittis tellus, eu tincidunt odio semper at. Nunc efficitur quam quam, eget aliquet enim lobortis ut.' },
-    { id: 4, data: 'Etiam quis ex quis eros ullamcorper elementum vitae sed nisl. ' }
-  ])
+  const notes = ref([])
 
   const fetchNotes = async () => {
     try {
