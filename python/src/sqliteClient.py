@@ -4,11 +4,11 @@ import os
 
 class SQLiteClient:
     def __init__(self, db_name):
-        if db_name == ":memory:" or db_name.startswith("tmp"):
-            self.connection = sqlite3.connect(db_name, check_same_thread=False)
+        if os.getenv('TESTING') == 'true':
+            db_path = ':memory:'
         else:
             db_path = os.path.join('/data', db_name)
-            self.connection = sqlite3.connect(db_path, check_same_thread=False)
+        self.connection = sqlite3.connect(db_path, check_same_thread=False)
         self.cursor = self.connection.cursor()
 
     def execute_query(self, query, params=()):

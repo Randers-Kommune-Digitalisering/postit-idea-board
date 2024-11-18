@@ -7,12 +7,11 @@ from sqliteClient import init_db, SQLiteClient
 def app():
     app = create_app()
     app.config.update({
-        "TESTING": True,
-        "DATABASE": ":memory:",  # Use in-memory database for testing
+        "TESTING": True
     })
 
     with app.app_context():
-        init_db(SQLiteClient(app.config["DATABASE"]))  # Initialize the in-memory database
+        init_db(SQLiteClient())  # Initialize the in-memory database
 
     yield app
 
