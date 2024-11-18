@@ -25,7 +25,7 @@ def create_app():
     def set_ready():
         is_ready_gauge.labels(job_name=POD_NAME, error_type=None).set(1)
         last_updated_gauge.set_to_current_time()
-    
+
     return app
 
 
@@ -34,8 +34,10 @@ def run_app():
     app = create_app()
     app.run(debug=DEBUG, host='0.0.0.0', port=PORT)
 
+
 def run_ws_server():
     asyncio.run(start_server())
+
 
 # Create threads for both functions
 app_thread = threading.Thread(target=run_app)
@@ -48,6 +50,3 @@ ws_thread.start()
 # Join both threads to the main thread to wait for their completion
 app_thread.join()
 ws_thread.join()
-
-# if __name__ == '__main__':  # pragma: no cover
-#     app.run(debug=DEBUG, host='0.0.0.0', port=PORT)

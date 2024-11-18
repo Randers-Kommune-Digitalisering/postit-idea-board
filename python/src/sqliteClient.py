@@ -1,6 +1,7 @@
 import sqlite3
 import os
 
+
 class SQLiteClient:
     def __init__(self, db_name):
         db_path = os.path.join('/data', db_name)

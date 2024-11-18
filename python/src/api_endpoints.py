@@ -4,8 +4,8 @@ import json
 
 from flask import Blueprint, Response, request
 
-from utils.config import POD_NAME
-from utils.logging import is_ready_gauge, last_updated_gauge, job_start_counter, job_complete_counter, job_duration_summary
+# from utils.config import POD_NAME
+# from utils.logging import is_ready_gauge, last_updated_gauge, job_start_counter, job_complete_counter, job_duration_summary
 from websocket import send_message
 from sqliteClient import SQLiteClient
 
@@ -30,7 +30,7 @@ def push():
         except Exception as e:
             logger.error(f'Pushed data not in JSON: {payload}')
             return Response(f'Error parsing JSON: {e}', status=400)
-        
+
         # Insert data to DB
         try:
             client.execute_query(f'INSERT INTO notes (data) VALUES ("{payload.get("data")}")')   
@@ -48,7 +48,7 @@ def push():
         # Log and return
         logger.info(f'Pushed data: {payload}')
         return Response('Data received', status=200)
-    
+
     else:
         return Response('Content-Type must be application/json', status=400)
 
@@ -60,7 +60,7 @@ def get():
         data = client.fetch_all('SELECT * FROM notes')
         column_names = [desc[0] for desc in client.cursor.description]
         data = [dict(zip(column_names, row)) for row in data]
-        
+
     except Exception as e:
         logger.error(f'Error fetching data: {e}')
         return Response(f'Error fetching data: {e}', status=500)
