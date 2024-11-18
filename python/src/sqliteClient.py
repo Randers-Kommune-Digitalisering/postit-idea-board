@@ -4,7 +4,7 @@ import os
 
 class SQLiteClient:
     def __init__(self, db_name):
-        if db_name == ":memory:":
+        if db_name == ":memory:" or db_name.startswith("tmp"):
             self.connection = sqlite3.connect(db_name, check_same_thread=False)
         else:
             db_path = os.path.join('/data', db_name)
@@ -33,7 +33,7 @@ class SQLiteClient:
 class NoteDB:
     def __init__(self, db_name):
         self.client = SQLiteClient(db_name)
-        self.client.execute_query('DROP TABLE notes')
+        # self.client.execute_query('DROP TABLE IF EXISTS notes')
         self.client.execute_query('CREATE TABLE IF NOT EXISTS notes (id INTEGER PRIMARY KEY, email TEXT, data TEXT)')
 
     def insert(self, email, data):
