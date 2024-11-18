@@ -67,3 +67,14 @@ def get():
 
     # Log and return
     return Response(json.dumps(data).encode('utf-8'), status=200, mimetype='application/json')
+
+
+@api_endpoints.route('/clear', methods=['DELETE'])
+def clear():
+    try:
+        client.execute_query('DELETE FROM notes')
+    except Exception as e:
+        logger.error(f'Error clearing data: {e}')
+        return Response(f'Error clearing data: {e}', status=500)
+
+    return Response('Data cleared', status=200)
