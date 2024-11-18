@@ -5,6 +5,7 @@ import logging
 logger = logging.getLogger(__name__)
 clients = []
 
+
 async def echo(websocket):
     # Add to connection list
     clients.append(websocket)
@@ -22,10 +23,12 @@ async def echo(websocket):
     finally:
         clients.remove(websocket)
 
+
 # Start the server
 async def start_server():
     async with serve(echo, "localhost", 8765):
         await asyncio.get_running_loop().create_future()  # run forever
+
 
 # Send message to all clients
 async def send_message(message):
