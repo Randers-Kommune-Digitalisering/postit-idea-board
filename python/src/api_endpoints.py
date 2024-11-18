@@ -20,10 +20,7 @@ notedb = NoteDB('notes.db')
 
 @api_endpoints.route('/push', methods=['POST'])
 def push():
-    logger.warning('New data received')
     if request.headers.get('Content-Type') == 'application/json':
-        logger.warning('Content-Type is application/json')
-
         # Parse JSON payload
         try:
             payload = request.get_json()
@@ -40,7 +37,6 @@ def push():
 
         # Send data to websocket
         try:
-            logger.warning(f'Pushing data: {payload.get("data")}')
             asyncio.run(send_message(payload.get('data')))
         except Exception as e:
             logger.error(f'Error sending message: {e}')
