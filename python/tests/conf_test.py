@@ -1,4 +1,5 @@
 import pytest
+import tempfile
 from main import create_app
 from sqliteClient import init_db, SQLiteClient
 
@@ -8,11 +9,11 @@ def app():
     app = create_app()
     app.config.update({
         "TESTING": True,
-        "DATABASE": ":memory:",  # Use in-memory database for testing
+        "DATABASE": tempfile.NamedTemporaryFile(delete=False).name,  # Use temporary file for testing
     })
 
     with app.app_context():
-        init_db(SQLiteClient(":memory:"))  # Initialize the database with in-memory client
+        init_db(SQLiteClient(app.config["DATABASE"]))  # Initialize the database with temporary file
 
     yield app
 
