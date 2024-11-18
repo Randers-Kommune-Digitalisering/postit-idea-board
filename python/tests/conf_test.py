@@ -1,5 +1,6 @@
 import pytest
 from main import create_app
+from sqliteClient import init_db, SQLiteClient
 
 
 @pytest.fixture()
@@ -7,7 +8,11 @@ def app():
     app = create_app()
     app.config.update({
         "TESTING": True,
+        "DATABASE": ":memory:",  # Use in-memory database for testing
     })
+
+    with app.app_context():
+        init_db(SQLiteClient(":memory:"))  # Initialize the database with in-memory client
 
     yield app
 

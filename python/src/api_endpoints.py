@@ -7,13 +7,11 @@ from flask import Blueprint, Response, request
 # from utils.config import POD_NAME
 # from utils.logging import is_ready_gauge, last_updated_gauge, job_start_counter, job_complete_counter, job_duration_summary
 from websocket import send_message
-from sqliteClient import SQLiteClient
+from sqliteClient import NoteDB
 
 logger = logging.getLogger(__name__)
 api_endpoints = Blueprint('api', __name__)
-
-client = SQLiteClient('notes.db')
-client.execute_query('CREATE TABLE IF NOT EXISTS notes (id INTEGER PRIMARY KEY, data TEXT)')
+notedb = NoteDB('notes.db')
 
 # NB: uncomment code in main.py to enable these endpoints
 # Any endpoints added here will be available at /api/<endpoint> - e.g. http://127.0.0.1:3000/api/example
@@ -22,7 +20,9 @@ client.execute_query('CREATE TABLE IF NOT EXISTS notes (id INTEGER PRIMARY KEY, 
 
 @api_endpoints.route('/push', methods=['POST'])
 def push():
+    logger.warning('New data received')
     if request.headers.get('Content-Type') == 'application/json':
+        logger.warning('Content-Type is application/json')
 
         # Parse JSON payload
         try:
@@ -33,13 +33,14 @@ def push():
 
         # Insert data to DB
         try:
-            client.execute_query(f'INSERT INTO notes (data) VALUES ("{payload.get("data")}")')   
+            notedb.insert(payload.get('email'), payload.get('data'))
         except Exception as e:
             logger.error(f'Error storing data: {e}')
             return Response(f'Error storing data: {e}', status=500)
 
         # Send data to websocket
-        try: 
+        try:
+            logger.warning(f'Pushing data: {payload.get("data")}')
             asyncio.run(send_message(payload.get('data')))
         except Exception as e:
             logger.error(f'Error sending message: {e}')
@@ -57,8 +58,8 @@ def push():
 def get():
     try:
         # Fetch and zip data
-        data = client.fetch_all('SELECT * FROM notes')
-        column_names = [desc[0] for desc in client.cursor.description]
+        data = notedb.fetch_all()
+        column_names = [desc[0] for desc in notedb.client.cursor.description]
         data = [dict(zip(column_names, row)) for row in data]
 
     except Exception as e:
@@ -72,7 +73,7 @@ def get():
 @api_endpoints.route('/clear', methods=['DELETE'])
 def clear():
     try:
-        client.execute_query('DELETE FROM notes')
+        notedb.delete_all()
     except Exception as e:
         logger.error(f'Error clearing data: {e}')
         return Response(f'Error clearing data: {e}', status=500)
