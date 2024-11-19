@@ -1,5 +1,5 @@
 <script setup>
-  import { ref } from 'vue'
+  import { ref, onMounted } from 'vue'
 
   import MessageBar from './components/MessageBar.vue'
   import PostItNote from './components/PostItNote.vue'
@@ -69,6 +69,36 @@
     console.log('Sending message to server')
     socket.send("TEST DATA")
   }*/
+
+  function scrollContainer() {
+    const container = document.querySelector('.container');
+    let scrollAmount = 0;
+    const scrollStep = 0.5; // Adjust this value to control the scroll speed
+    let direction = 1; // 1 for forward, -1 for backward
+    let isPaused = false;
+
+    function step() {
+      if (!isPaused) {
+        scrollAmount += scrollStep * direction;
+        container.scrollLeft = scrollAmount;
+        if (scrollAmount >= container.scrollWidth - container.clientWidth || scrollAmount <= 0) {
+          direction *= -1; // Reverse direction
+          isPaused = true;
+          setTimeout(() => {
+            isPaused = false;
+            requestAnimationFrame(step);
+          }, 5000); // Pause for 5 seconds before reversing
+          return;
+        }
+      }
+      requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+
+  onMounted(() => {
+    scrollContainer();
+  })
 </script>
 
 <template>
@@ -80,13 +110,15 @@
 </template>
 
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Delius&family=Playwrite+DE+Grund:wght@100..400&family=Sour+Gummy:ital,wght@0,100..900;1,100..900&display=swap');
 *{
   box-sizing: border-box;
 }
 body {
   margin: 0;
   width: 100%;
-  font-family: Helvetica, Arial, sans-serif;
+  font-family: "Playwrite DE Grund", Helvetica, Arial, sans-serif;
+  font-size: 0.9em;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   color: #2c3e50;
@@ -99,6 +131,7 @@ h1 {
   font-size: 2.5em;
   margin-top: 3rem;
   color: #51677c;
+  font-family: Helvetica, Arial, sans-serif;
 }
 .container {
   padding: 1.5rem;
