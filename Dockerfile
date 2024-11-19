@@ -1,44 +1,47 @@
-FROM node:23-alpine AS vue-build
-
+# Stage 1: Build Vue app and install Express dependencies
+FROM node:lts-alpine AS node-build
 WORKDIR /app
 
-## Build and copy the vue app
-COPY vue .
-RUN npm install && npm run build
+# Copy project files and folders to the current working directory
+COPY . .
 
-FROM python:3.12-alpine
+# Install and build Vue app
+RUN cd vue && npm install && npm run build
 
-# Set dir and user
-ENV GROUP_NAME=app
-ENV HOME=/app
-ENV GROUP_ID=11000
-ENV USER_ID=11001
-ENV PORT=8080
+# Copy built Vue app to a separate directory
+RUN cp -r vue/dist dist
 
-# Add user
-RUN addgroup --gid $GROUP_ID $GROUP_NAME && \
-    adduser $USER_ID -u $USER_ID -D -G $GROUP_NAME -h $HOME
+# Install Express dependencies
+RUN cd express && npm install --omit=dev
 
-# Install packages
-RUN apk update
-RUN apk add musl-dev gcc libpq-dev mariadb-connector-c-dev postgresql-dev python3-dev
+# Stage 2: Build the final image with Python and Node.js
+FROM python:3.10-alpine
+WORKDIR /app
 
-# Set working dir
-WORKDIR $HOME
+# Install necessary packages
+RUN apk update && \
+    apk add --no-cache musl-dev gcc libpq-dev mariadb-connector-c-dev postgresql-dev python3-dev nodejs npm
 
-# Copy files and 
-COPY --from=vue-build /app/dist ./dist
-COPY flask/src .
+# Create a directory for SQLite data
+RUN mkdir -p /data
 
-# Install python packages
-RUN pip install --upgrade pip
-RUN pip install -r requirements.txt
+# Install backend dependencies
+COPY python/src/requirements.txt ./python/src/
+RUN pip install -r python/src/requirements.txt
 
-# Open port
-EXPOSE $PORT
+# Copy backend source files
+COPY python/ ./python/
 
-# Set user
-USER $USER_ID
+# Copy built Vue app and Express server files from the node-build stage
+COPY --from=node-build /app/dist ./dist
+COPY --from=node-build /app/express ./express
 
-ENTRYPOINT ["python"]
-CMD ["main.py"]
+# Set the volume for SQLite data
+VOLUME ["/data"]
+
+# Expose ports
+EXPOSE 3000
+EXPOSE 8765
+
+# Start both the Python backend and the Express server
+CMD ["sh", "-c", "python python/src/main.py & node express/server.js"]

@@ -1,73 +1,158 @@
 <script setup>
-import { ref } from 'vue';
+  import { ref, onMounted } from 'vue'
 
-import Header from './components/Menu.vue'
-const headerComponent = ref(null)
-const currentComponent = ref(null)
+  import MessageBar from './components/MessageBar.vue'
+  import PostItNote from './components/PostItNote.vue'
 
-// Function to update header alert from currentComponent
-const setHeaderAlert = (headerItemTitle, alertText) => {
-    headerComponent.value.setAlert(headerItemTitle, alertText)
-};
+  const WS_PROXY = '/ws'
+  const isConnected = ref(false)
+  const isConnecting = ref(true)
+
+  const notes = ref([])
+
+  const fetchNotes = async () => {
+    try {
+      const response = await fetch('/api/get')
+      if (!response.ok) {
+        throw new Error('Network response was not ok')
+      }
+      const data = await response.json()
+      notes.value = data
+    } catch (error) {
+      console.error('Error fetching notes:', error)
+    }
+  }
+
+  fetchNotes()
+
+  const getColor = (id) => {
+    const colors = ['#a3f7d4', '#b3f0f0', '#a8d0ff', '#c1bfff', '#fff5d1', '#fcd3c8', '#ffb3b3', '#feb3d1', '#f3a07a', '#fdd7a3', '#f3a3c3', '#b3a3ff', '#4da6ff', '#80e6c4', '#80e6e6']
+    return colors[id%colors.length]
+  }
+
+  var socket
+  openWebsocket()
+  
+  function openWebsocket()
+  {
+    socket = new WebSocket(WS_PROXY)
+
+    socket.addEventListener('open', function (event) {
+      console.log('Connected to server')
+      isConnecting.value = false
+      isConnected.value = true
+    })
+
+    socket.addEventListener('close', function (event) {
+      isConnected.value = false
+    })
+
+    socket.addEventListener('message', function (event) {
+      //console.log("New message: " + event.data)
+      notes.value.push({ id: notes.value.length + 1, data: event.data })
+    })
+
+    socket.addEventListener('error', function (event){
+      console.error('WebSocket error observed:', event)
+      isConnecting.value = false
+      isConnected.value = false
+    })
+  }
+
+  function reconnect() {
+    console.log('Reconnecting to server')
+    isConnecting.value = true
+    openWebsocket()
+  }
+
+  /*const contactServer = () => {
+    console.log('Sending message to server')
+    socket.send("TEST DATA")
+  }*/
+
+  function scrollContainer() {
+    const container = document.querySelector('.container');
+    let scrollAmount = 0;
+    const scrollStep = 0.5; // Adjust this value to control the scroll speed
+    let direction = 1; // 1 for forward, -1 for backward
+    let isPaused = false;
+
+    function step() {
+      if (!isPaused) {
+        scrollAmount += scrollStep * direction;
+        container.scrollLeft = scrollAmount;
+        if (scrollAmount >= container.scrollWidth - container.clientWidth || scrollAmount <= 0) {
+          direction *= -1; // Reverse direction
+          isPaused = true;
+          setTimeout(() => {
+            isPaused = false;
+            requestAnimationFrame(step);
+          }, 5000); // Pause for 5 seconds before reversing
+          return;
+        }
+      }
+      requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+
+  onMounted(() => {
+    scrollContainer();
+  })
 </script>
 
 <template>
-
-  <header>
-
-      <Header ref="headerComponent" />
-
-  </header>
-  
-  <main>
-
-      <div class="content">
-          <router-view ref="currentComponent" @onHeaderAlert="setHeaderAlert"></router-view>
-      </div>
-
-  </main>
-
+  <h1>Idéer til digital fornyelse</h1>
+  <div class="container">
+    <PostItNote v-for="note in notes" :key="note.id" :msg="note.data" :color="getColor(note.id)" />
+  </div>
+  <MessageBar v-if="!isConnecting && !isConnected" @click="reconnect()" />
 </template>
 
-
-<style scoped>
-/* Mobile first */
-.content
-{
-    width: 100vw;
-    border-left: 0rem;
-    border-right: 0rem;
-
-    background-color: var(--color-bg-light);
-
-    padding: 2.5rem 3.5rem;
-    padding-bottom: 6rem;
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Delius&family=Playwrite+DE+Grund:wght@100..400&family=Sour+Gummy:ital,wght@0,100..900;1,100..900&display=swap');
+*{
+  box-sizing: border-box;
 }
-
-main
-{
-    /* Add padding for header */
-    padding-top: 6rem;
+body {
+  margin: 0;
+  width: 100%;
+  font-family: "Playwrite DE Grund", Helvetica, Arial, sans-serif;
+  font-size: 0.9em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color: #2c3e50;
+  background-color: #ececec;
 }
-
-/* Tablet or desktop */
-@media screen and (min-width: 53.125rem) /* 850px or 85rem using 16 px conversion */
-{
-    .content
-    {
-        /* Set width of main content */
-        width: 85rem;
-
-        border-left: 0.1rem solid var(--color-border);
-        border-right: 0.1rem solid var(--color-border);
-    }
+#app {
+  text-align: center;
 }
-@media screen and (min-width: 80rem)
-{
-    main
-    {
-        /* Remove padding for header as header becomes side menu */
-        padding-top: 0rem;
-    }
+h1 {
+  font-size: 2.5em;
+  margin-top: 3rem;
+  color: #51677c;
+  font-family: Helvetica, Arial, sans-serif;
+}
+.container {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  height: calc(100vh - 7.5rem);
+  overflow: auto;
+}
+.container > * {
+  padding: 0.8rem;
+  border-radius: 0.5rem;
+  max-width: calc(25vw - 3rem);
+  text-align: left;
+  position: relative;
+  box-shadow: 0 0px 0.5rem rgba(0, 0, 0, 0.05);
+  text-wrap: wrap;
+  word-wrap: break-word;
+  text-overflow: ellipsis;
 }
 </style>

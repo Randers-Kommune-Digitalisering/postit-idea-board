@@ -26,16 +26,12 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update -y
-          sudo apt-get install -y libmariadb-dev
           python -m pip install --upgrade pip
-          pip install -r flask/src/requirements.txt
-          pip install -r flask/requirements-dev.txt
+          pip install -r python/src/requirements.txt
+          pip install -r python/src/requirements-dev.txt
       - name: Check for syntax errors or undefined names
         run: | 
-          flake8 flask/src flask/tests --count --select=E9,F63,F7,F82 --show-source --statistics
-      - name: Unit tests with pytest
-        run: | 
-          pytest
+          flake8 python/src python --count --select=E9,F63,F7,F82 --show-source --statistics
       - name: Lint with flake8
         run: | 
-          flake8 --ignore=E501,W293 flask/src flask/tests --show-source
+          flake8 --ignore=E501,W293 python/src --show-source

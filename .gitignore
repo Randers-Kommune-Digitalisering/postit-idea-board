@@ -72,7 +72,7 @@ coverage
 *.njsproj
 *.sln
 *.sw?
-.env*
-
-# virtualenv
 .venv
+
+# Test
+# Test.mp4
