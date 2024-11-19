@@ -1,9 +1,2 @@
-# Vue-Python-Tempplate
-Template for vue and python projects
-
-## Kørsel af Frontenden(Vue)
-* Installerer afhængigheder: ``` npm install ```
-* Compile, hot reload og start frontenden: ``` npm run serve ```
-
-## Kørsel af Bakcenden(Python)
-* Start applikationen: ``` python src/main.py ```
+# Postit-idea-board
+Webflade som udstiller små postit notes. Postit notes indsendes via X-Flow formular til endpoint /api/push, og kræver værdierne "email" samt "data". Data udstilles på webfladen.
