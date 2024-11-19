@@ -45,5 +45,8 @@ class NoteDB:
     def delete_all(self):
         self.client.execute_query('DELETE FROM notes')
 
+    def delete_single(self, id):
+        self.client.execute_query('DELETE FROM notes WHERE id = ?', (id))
+
     def close(self):
         self.client.close()

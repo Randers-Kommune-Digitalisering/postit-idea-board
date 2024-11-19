@@ -75,3 +75,16 @@ def clear():
         return Response(f'Error clearing data: {e}', status=500)
 
     return Response('Data cleared', status=200)
+
+
+@api_endpoints.route('/delete', methods=['DELETE'])
+def delete():
+    if 'id' not in request.args:
+        return Response('ID parameter required', status=400)
+    try:
+        notedb.delete_single(request.args.get('id'))
+    except Exception as e:
+        logger.error(f'Error deleting data: {e}')
+        return Response(f'Error deleting data: {e}', status=500)
+
+    return Response('Data deleted', status=200)
