@@ -25,9 +25,9 @@
 
   fetchNotes()
 
-  const randomColor = () => {
+  const getColor = (id) => {
     const colors = ['#a3f7d4', '#b3f0f0', '#a8d0ff', '#c1bfff', '#fff5d1', '#fcd3c8', '#ffb3b3', '#feb3d1', '#f3a07a', '#fdd7a3', '#f3a3c3', '#b3a3ff', '#4da6ff', '#80e6c4', '#80e6e6']
-    return colors[Math.floor(Math.random() * colors.length)]
+    return colors[id%colors.length]
   }
 
   var socket
@@ -72,9 +72,9 @@
 </script>
 
 <template>
-  <!--h1>Idéer til digital fornyelse</h1-->
+  <h1>Idéer til digital fornyelse</h1>
   <div class="container">
-    <PostItNote v-for="note in notes" :key="note.id" :msg="note.data" :color="randomColor()" />
+    <PostItNote v-for="note in notes" :key="note.id" :msg="note.data" :color="getColor(note.id)" />
   </div>
   <MessageBar v-if="!isConnecting && !isConnected" @click="reconnect()" />
 </template>
@@ -86,7 +86,7 @@
 body {
   margin: 0;
   width: 100%;
-  font-family: Avenir, Helvetica, Arial, sans-serif;
+  font-family: Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   color: #2c3e50;
@@ -95,7 +95,11 @@ body {
 #app {
   text-align: center;
 }
-
+h1 {
+  font-size: 2.5em;
+  margin-top: 3rem;
+  color: #51677c;
+}
 .container {
   padding: 1.5rem;
   display: flex;
@@ -104,7 +108,7 @@ body {
   justify-content: center;
   align-items: center;
   gap: 1rem;
-  height: 100vh;
+  height: calc(100vh - 7.5rem);
   overflow: auto;
 }
 .container > * {
@@ -113,6 +117,9 @@ body {
   max-width: calc(25vw - 3rem);
   text-align: left;
   position: relative;
-  box-shadow: 0 0px 0.5rem rgba(0, 0, 0, 0.02);
+  box-shadow: 0 0px 0.5rem rgba(0, 0, 0, 0.05);
+  text-wrap: wrap;
+  word-wrap: break-word;
+  text-overflow: ellipsis;
 }
 </style>
