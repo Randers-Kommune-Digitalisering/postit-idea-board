@@ -28,6 +28,13 @@ def push():
             logger.error(f'Pushed data not in JSON: {payload}')
             return Response(f'Error parsing JSON: {e}', status=400)
 
+        # Check required data
+        if 'email' not in payload or 'data' not in payload:
+            return Response('Email and data fields required', status=400)
+
+        if payload.get('data') is None or payload.get('data') == '':
+            return Response('Data cannot be null', status=400)
+
         # Insert data to DB
         try:
             notedb.insert(payload.get('email'), payload.get('data'))
