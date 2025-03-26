@@ -130,7 +130,7 @@
   <div class="container" v-if="notes.length > 0">
     <PostItNote v-for="note in notes" :key="note.id" :msg="note.data" :color="getColor(note.id)" />
   </div>
-  <div v-else class="noitems"><span>Du kan blive den første til at indsende en idé :) {{ isReconnecting }}</span></div>
+  <div v-else class="noitems"><span>Du kan blive den første til at indsende en idé :)</span></div>
   <MessageBar v-if="!isConnecting && !isConnected" @click="reconnect()" :isReconnecting="isReconnecting" />
 </template>
 
