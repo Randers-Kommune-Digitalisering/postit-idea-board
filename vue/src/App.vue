@@ -7,6 +7,7 @@
   const WS_PROXY = '/ws'
   const isConnected = ref(false)
   const isConnecting = ref(true)
+  const isReconnecting = ref(false)
 
   const notes = ref([])
 
@@ -45,6 +46,8 @@
 
     socket.addEventListener('close', function (event) {
       isConnected.value = false
+      if(!isReconnecting.value)
+        attemptReconnect()
     })
 
     socket.addEventListener('message', function (event) {
@@ -59,7 +62,28 @@
     })
   }
 
+  function attemptReconnect()
+  {
+    isReconnecting.value = true
+    let attempts = 0;
+    const maxAttempts = 5;
+    const interval = 3000;
+
+    const reconnectInterval = setInterval(() => {
+      if (attempts < maxAttempts && !isConnected.value) {
+        reconnect();
+        attempts++;
+      } else {
+        clearInterval(reconnectInterval);
+        isReconnecting.value = false;
+      }
+    }, interval);
+  }
+
   function reconnect() {
+    if(isReconnecting.value || isConnected.value)
+      return
+
     console.log('Reconnecting to server')
     isConnecting.value = true
     openWebsocket()
@@ -103,10 +127,11 @@
 
 <template>
   <h1>Idéer til digital fornyelse</h1>
-  <div class="container">
+  <div class="container" v-if="notes.length > 0">
     <PostItNote v-for="note in notes" :key="note.id" :msg="note.data" :color="getColor(note.id)" />
   </div>
-  <MessageBar v-if="!isConnecting && !isConnected" @click="reconnect()" />
+  <div v-else class="noitems"><span>Du kan blive den første til at indsende en idé :)</span></div>
+  <MessageBar v-if="!isConnecting && !isConnected" @click="reconnect()" :isReconnecting="isReconnecting" />
 </template>
 
 <style>
@@ -132,6 +157,13 @@ h1 {
   margin-top: 3rem;
   color: #51677c;
   font-family: Helvetica, Arial, sans-serif;
+}
+.noitems {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  height: calc(100vh - 7.5rem);
 }
 .container {
   padding: 1.5rem;
